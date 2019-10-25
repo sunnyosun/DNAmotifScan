@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 
-Created on 1/4/2019
 This script scans the human TF motifs (provided as position weight matrix PWM) for a given sequence
 The output is the similarity score for each sliding window with step set as 1bp
 
-@author: Sunny (Xiaoji) Sun. email: sunny.sun@nyu.edu
+@author: Sunny Sun. email: sunny.sun@nyu.edu
 
 To Use: 
 Create two folders in the same directory: Promoter_fasta, pwm
