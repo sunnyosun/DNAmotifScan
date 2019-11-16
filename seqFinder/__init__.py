@@ -1,0 +1,1 @@
+from .seqFromGenome import SeqFromGenome
