@@ -7,7 +7,7 @@ The sequece is provided in fasta format.
 Examples are included.
 
 ### Create sequences file
-`python -m seqFinder`
+`python -m seqFinder -q <path_to_csv_file> [-f path_to_fasta_file]`
 
 
 ### Find motifs
