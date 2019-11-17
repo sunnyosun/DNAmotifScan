@@ -10,7 +10,7 @@ from .findMotif import MotifFinder
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-m", "--motif-path",
+    parser.add_argument("-p", "--motif-path",
                         help="Path to the directory storing motif files.")
     parser.add_argument("-f", "--fasta-path",
                         help="Path to the fasta file of sequences.")
