@@ -11,4 +11,4 @@ Examples are included.
 
 
 ### Find motifs
-`python -m motifFinder`
+`python -m motifFinder -p path_to_motif_files_directory -f path_to_fastafile`
