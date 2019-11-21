@@ -13,7 +13,7 @@ if __name__ == "__main__":
             results = pk.load(f)
         parsed.update(ResultParser.parse(results))
     
-    with open("data/parsed_results.pk", "wb") as f:
+    with open("data/parsed_results_dict.pk", "wb") as f:
         pk.dump(parsed, f)
 
 

@@ -28,7 +28,8 @@ class ResultParser:
         n_motifs = len(motifs)
         score_avg = st.mean(scores)
         score_stdev = st.stdev(scores)
-        return Info(motifs, best_match, n_motifs, score_avg, score_stdev)
+        return Info(
+            motifs, best_match, n_motifs, score_avg, score_stdev)._asdict()
 
     @classmethod
     def _refine(cls, motifs: list):
