@@ -28,7 +28,7 @@ class MotifFinder:
             sums.append(np.trace(mat[:, i:]))
         return np.array(sums).reshape(-1, 1)
 
-    def _similarity_score(self, pwm, forward_mat, reverse_mat):
+    def _similarity_score(self, pwm, forward_mat, reverse_mat, threshold=0.9):
         """
         Calcualte the similarity score for a given sequence in each bp
         width of the sliding window == length of motif
@@ -43,25 +43,27 @@ class MotifFinder:
         scores = np.concatenate((forward_scores, reverse_scores), axis=1)
         strands = (scores[:, 0] > scores[:, 1]).astype(int)
         best_scores = np.max(scores, axis=1)
-        best_score = np.max(best_scores)
-        best_index = np.argmax(best_scores)
-        strand = strands.squeeze()[best_index]
-        return best_score, best_index, strand
+        matched_indices = np.where(best_scores>threshold)
+        matched_scores = best_scores[matched_indices].tolist()
+        matched_indices = matched_indices[0].tolist()
+        # strand = strands.squeeze()[best_index]
+        frequency = np.sum(best_scores > threshold)
+        return matched_scores, matched_indices, frequency
 
-    def get_matching_motifs(self, sequence):
+    def get_matching_motifs(self, sequence, threshold=0.9):
         matched_motifs = list()
         sequence = sequence.upper()
         forward_mat = self._seq2mat(sequence)
         reverse_mat = self._seq2mat(sequence.reverse_complement())
         for motif, pwm in self.pwms.items():
-            score, index, strand = self._similarity_score(
+            scores, indices, frequency = self._similarity_score(
                                         pwm, forward_mat, reverse_mat)
-            if score > 0.9:
+            if len(scores) > 0:
                 matched = dict()
                 matched["motif"] = motif
-                matched["score"] = score
-                matched["index"] = index
-                matched["strand"] = strand
+                matched["scores"] = scores
+                matched["indices"] = indices
+                matched["frequency"] = frequency
                 matched_motifs.append(matched)
         return matched_motifs
 
