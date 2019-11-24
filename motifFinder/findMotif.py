@@ -47,7 +47,7 @@ class MotifFinder:
         matched_scores = best_scores[matched_indices].tolist()
         matched_indices = matched_indices[0].tolist()
         # strand = strands.squeeze()[best_index]
-        frequency = np.sum(best_scores > threshold)
+        frequency = np.sum(best_scores > threshold).astype(int)
         return matched_scores, matched_indices, frequency
 
     def get_matching_motifs(self, sequence, threshold=0.9):
