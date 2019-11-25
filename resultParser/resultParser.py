@@ -28,9 +28,23 @@ class ResultDict(dict):
 class ResultParser:
 
     @classmethod
-    def _combine(cls, motifs: dict):
+    def _combine(cls, motifs: list):
         buffer = dict()
-        for motif_name, data in motifs:
+        for motif in motifs:
+            tf_name = "_".join(motif["motif"].split("_")[:-1])
+            try:
+                buffer[tf_name]["scores"] += motif["scores"]
+                buffer[tf_name]["indices"] += motif["indices"]
+                buffer[tf_name]["frequency"] += motif["frequency"]
+            except KeyError:
+                motif.pop("motif")
+                buffer[tf_name] = motif
+        return buffer
+
+    @classmethod
+    def _combine2(cls, motifs: dict):
+        buffer = dict()
+        for motif_name, data in motifs.items():
             tf_name = "_".join(motif_name.split("_")[:-1])
             try:
                 buffer[tf_name]["scores"] += data["scores"]
@@ -76,24 +90,25 @@ class ResultParser:
     def combine_motifs(cls, raw_data):
         combined_dict = ResultDict()
         for seq_name, motifs in raw_data.items():
-            info = cls._combine(motifs)
+            try:
+                info = cls._combine(motifs)
+            except Exception:
+                info = cls._combine2(motifs)
             combined_dict[seq_name] = info
         return combined_dict
 
     @classmethod
     def frequency_matrix(cls,
-                         raw_data=None,
                          loaded_dict=None,
                          combine_motifs=True,
                          columns=None):
-        if loaded_dict is None:
-            if raw_data is None:
-                raise TypeError("Missing required argument: raw_data")
-            if combine_motifs:
-                print("Combining raw_data...")
-                loaded_dict = cls.combine_motifs(raw_data)
-            else:
-                loaded_dict = raw_data
+        if combine_motifs:
+            print("Combining motifs...")
+            try:
+                loaded_dict = cls.combine_motifs(loaded_dict)
+            except KeyError:
+                print("Motifs are combined already. Skipped combining.")
+                pass
         if columns is None:
             columns = cls._all_motifs(loaded_dict)
         indices = list(loaded_dict.keys())
@@ -106,6 +121,7 @@ class ResultParser:
         for seq_name, motifs in tqdm(loaded_dict.items()):
             for motif, values in motifs.items():
                 contents[row_dict[seq_name]][column_dict[motif]] = \
-                    values["frequency"]
-        frqc_mat = pd.DataFrame(contents, index=indices, columns=columns)
-        return frqc_mat.astype(int)
+                    int(values["frequency"])
+        frqc_mat = pd.DataFrame(
+            contents, index=indices, columns=columns, dtype=int)
+        return frqc_mat
